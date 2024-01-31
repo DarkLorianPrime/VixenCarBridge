@@ -1,9 +1,8 @@
 version: "3.10"
 
-x-redis-env: &x-redis-env
-  REDIS_PASSWORD: ${REDIS_PASSWORD}
-  REDIS_HOST: ${REDIS_HOST}
-  REDIS_DATABASE: ${REDIS_DATABASE}
+x-rabbit-env: &x-rabbit-env
+  RABBITMQ_DEFAULT_USER: ${RABBIT_USER}
+  RABBITMQ_DEFAULT_PASS: ${RABBIT_PASSWORD}
 
 x-postgres-env: &x-postgres-env
   POSTGRES_USER: ${POSTGRES_USER}
@@ -19,8 +18,8 @@ x-minio-env: &x-minio-env
 # Backend
 # Data checker
 # Nginx
-# Redis
-# MinIO
+# RabbitMQ bitnami/rabbitmq
+# MinIO bitname/minio
 # BRUGES:
 #   Запуск событий по времени
 
@@ -28,14 +27,20 @@ services:
   backend:
     build: containers/backend
     environment:
-      <<: [ *x-postgres-env, *x-minio-env, *x-redis-env ]
+      <<: [ *x-postgres-env, *x-minio-env, *x-rabbit-env ]
 
     volumes:
       - "./containers/backend/app:/application"
 
 
 networks:
-  redis-network:
+  rabbit-network:
   minio-network:
   sql-network:
   logic-network:
+
+
+volumes:
+  rabbit-data:
+  minio-data:
+  postgres-data:
