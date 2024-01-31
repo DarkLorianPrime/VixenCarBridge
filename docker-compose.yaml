@@ -50,6 +50,7 @@ services:
     image: minio/minio
     environment:
       <<: [ *x-minio-env ]
+      MINIO_BROWSER_REDIRECT: false
     ports:
       - "9000:9000"
       - "9090:9090"
@@ -58,6 +59,10 @@ services:
     command: minio server /export --console-address ":9090"
 
   nginx:
+    depends_on:
+      - minio
+      - backend
+      - rabbit
     restart: always
     image: nginx:latest
     volumes:
