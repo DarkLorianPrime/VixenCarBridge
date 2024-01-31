@@ -16,10 +16,10 @@ x-minio-env: &x-minio-env
 
 # Containers:
 # Backend - ✅
-# Data checker - ❌
 # Nginx - ❌
 # RabbitMQ bitnami/rabbitmq - ✅
 # MinIO minio/minio - ✅
+# Data checker - ❌
 # BRUGES - ❌:
 #   Запуск событий по времени
 
@@ -56,6 +56,16 @@ services:
     volumes:
       - minio-data:/export
     command: minio server /export --console-address ":9090"
+
+  nginx:
+    restart: always
+    image: nginx:latest
+    volumes:
+      - "./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro"
+    ports:
+      - "80:80"
+      - "443:443"
+
 networks:
   rabbit-network:
   minio-network:
