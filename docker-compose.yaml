@@ -1,0 +1,41 @@
+version: "3.10"
+
+x-redis-env: &x-redis-env
+  REDIS_PASSWORD: ${REDIS_PASSWORD}
+  REDIS_HOST: ${REDIS_HOST}
+  REDIS_DATABASE: ${REDIS_DATABASE}
+
+x-postgres-env: &x-postgres-env
+  POSTGRES_USER: ${POSTGRES_USER}
+  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  POSTGRES_HOST: ${POSTGRES_HOST}
+  POSTGRES_NAME: ${POSTGRES_NAME}
+
+x-minio-env: &x-minio-env
+  MINIO_ROOT_USER: ${MINIO_USER}
+  MINIO_ROOT_PASSWORD: ${MINIO_PASSWORD}
+
+# Containers:
+# Backend
+# Data checker
+# Nginx
+# Redis
+# MinIO
+# BRUGES:
+#   Запуск событий по времени
+
+services:
+  backend:
+    build: containers/backend
+    environment:
+      <<: [ *x-postgres-env, *x-minio-env, *x-redis-env ]
+
+    volumes:
+      - "./containers/backend/app:/application"
+
+
+networks:
+  redis-network:
+  minio-network:
+  sql-network:
+  logic-network:
