@@ -36,6 +36,15 @@ services:
     ports:
       - "8000:8000"
 
+  rabbit:
+    image: bitnami/rabbitmq
+    environment:
+      <<: [ *x-rabbit-env ]
+      RABBITMQ_MANAGEMENT_ALLOW_WEB_ACCESS: true
+    volumes:
+      - "rabbit-data:/var/lib/rabbitmq"
+    ports:
+      - "15672:15672"
 
 networks:
   rabbit-network:
