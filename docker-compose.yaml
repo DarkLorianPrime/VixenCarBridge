@@ -15,12 +15,12 @@ x-minio-env: &x-minio-env
   MINIO_ROOT_PASSWORD: ${MINIO_PASSWORD}
 
 # Containers:
-# Backend
-# Data checker
-# Nginx
-# RabbitMQ bitnami/rabbitmq
-# MinIO bitname/minio
-# BRUGES:
+# Backend - ✅
+# Data checker - ❌
+# Nginx - ❌
+# RabbitMQ bitnami/rabbitmq - ✅
+# MinIO minio/minio - ✅
+# BRUGES - ❌:
 #   Запуск событий по времени
 
 services:
@@ -42,10 +42,20 @@ services:
       <<: [ *x-rabbit-env ]
       RABBITMQ_MANAGEMENT_ALLOW_WEB_ACCESS: true
     volumes:
-      - "rabbit-data:/var/lib/rabbitmq"
+      - rabbit-data:/var/lib/rabbitmq
     ports:
       - "15672:15672"
 
+  minio:
+    image: minio/minio
+    environment:
+      <<: [ *x-minio-env ]
+    ports:
+      - "9000:9000"
+      - "9090:9090"
+    volumes:
+      - minio-data:/export
+    command: minio server /export --console-address ":9090"
 networks:
   rabbit-network:
   minio-network:
