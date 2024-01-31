@@ -15,12 +15,12 @@ x-minio-env: &x-minio-env
   MINIO_ROOT_PASSWORD: ${MINIO_PASSWORD}
 
 # Containers:
-# Backend
-# Data checker
-# Nginx
-# RabbitMQ bitnami/rabbitmq
-# MinIO bitname/minio
-# BRUGES:
+# Backend - ✅
+# Nginx - ❌
+# RabbitMQ bitnami/rabbitmq - ✅
+# MinIO minio/minio - ✅
+# Data checker - ❌
+# BRUGES - ❌:
 #   Запуск событий по времени
 
 services:
@@ -29,13 +29,42 @@ services:
     environment:
       <<: [ *x-postgres-env, *x-minio-env, *x-rabbit-env ]
 
-    command: uvicorn main.py --host=0.0.0.0 --port=8000
+    command: uvicorn main:app --host=0.0.0.0 --port=8000
     volumes:
       - "./containers/backend/app:/application"
 
     ports:
       - "8000:8000"
 
+  rabbit:
+    image: bitnami/rabbitmq
+    environment:
+      <<: [ *x-rabbit-env ]
+      RABBITMQ_MANAGEMENT_ALLOW_WEB_ACCESS: true
+    volumes:
+      - rabbit-data:/var/lib/rabbitmq
+    ports:
+      - "15672:15672"
+
+  minio:
+    image: minio/minio
+    environment:
+      <<: [ *x-minio-env ]
+    ports:
+      - "9000:9000"
+      - "9090:9090"
+    volumes:
+      - minio-data:/export
+    command: minio server /export --console-address ":9090"
+
+  nginx:
+    restart: always
+    image: nginx:latest
+    volumes:
+      - "./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro"
+    ports:
+      - "80:80"
+      - "443:443"
 
 networks:
   rabbit-network:
