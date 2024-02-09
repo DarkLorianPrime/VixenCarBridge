@@ -1,7 +1,7 @@
 from os import getenv
 
 from sqlalchemy import URL
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncEngine
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 url = URL(
@@ -14,10 +14,10 @@ url = URL(
     query={}
 )
 
-engine = create_async_engine(url, echo=True, future=True)
+engine: AsyncEngine = create_async_engine(url, echo=True, future=True)
 session_maker = async_sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
 
 
-async def get_session():
+async def get_session() -> AsyncSession:
     async with session_maker() as session:
         yield session
