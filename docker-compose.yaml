@@ -26,6 +26,10 @@ x-minio-env: &x-minio-env
 
 services:
   backend:
+    depends_on:
+      - minio
+      - database
+      - rabbit
     build: containers/backend
     environment:
       <<: [ *x-postgres-env, *x-minio-env, *x-rabbit-env ]
@@ -51,6 +55,11 @@ services:
     command: minio server /export --console-address ":9090"
 
   nginx:
+    depends_on:
+      - backend
+      - minio
+      - database
+      - rabbit
     restart: always
     image: nginx:latest
     volumes:
