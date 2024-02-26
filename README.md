@@ -4,4 +4,6 @@
 ## Документация по проекту
 [Тык](docs/README.md)
 
-TBC...
+## Requisition Lifeline
+![img.png](docs/images/request_path.png)
+Некоторые особенности настройки nginx связаны с особенностями настройки серверного Nginx.
