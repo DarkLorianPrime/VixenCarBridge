@@ -2,6 +2,7 @@ from logging import Handler, LogRecord
 from typing import List
 
 
+
 class SaveHandler(Handler):
     def __init__(self, capacity: int = 256):
         super().__init__()
