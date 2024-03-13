@@ -2,7 +2,7 @@ from fastapi import FastAPI, APIRouter
 from starlette.middleware import Middleware
 from starlette.requests import Request
 
-from utils.middlewares.logger import LoggerMiddleware
+from utils.logger.middleware import LoggerMiddleware
 
 """
 To-Do:
