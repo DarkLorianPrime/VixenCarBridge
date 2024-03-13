@@ -1,6 +1,6 @@
 import logging
 
-from utils.handlers.logger import SaveHandler
+from utils.logger.handler import SaveHandler
 
 logging.basicConfig(level=logging.DEBUG, handlers=[SaveHandler()])
 
