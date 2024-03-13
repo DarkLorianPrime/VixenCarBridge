@@ -73,9 +73,6 @@ class LoggerRepository:
 
         return scalar_result.all()
 
-    async def update(self):
-        raise NotImplementedError()
-
-    async def delete(self):
+    async def delete(self, instance: AuditRecord):
         # set removed
-        raise NotImplementedError()
+        await self.session.delete(instance)
