@@ -1,4 +1,4 @@
-import logging
+from http import HTTPMethod, HTTPStatus
 import time
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.requests import Request
@@ -29,7 +29,7 @@ class LoggerMiddleware(BaseHTTPMiddleware):
             "status_code": response.status_code,
             "ip_address": request.headers.get("X-Real-IP"),
             "user_id": request.scope.get("user"),
-            "action": request.method,
+            "action": HTTPMethod[request.method],
             "handle_time": duration,
             "endpoint": request.scope.get("route").path
         }
@@ -43,8 +43,8 @@ class LoggerMiddleware(BaseHTTPMiddleware):
         start_time = time.time()
 
         response = await call_next(request)
-
-        if response.status_code == 307:
+        
+        if HTTPStatus(response.status_code).is_redirection:
             return response
 
         duration = time.time() - start_time
