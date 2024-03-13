@@ -1,6 +1,8 @@
 import uuid
-from typing import Annotated, Optional
+from http import HTTPMethod, HTTPStatus
+from typing import Annotated, Optional, Any
 
+from sqlalchemy import insert
 from sqlmodel import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -12,8 +14,35 @@ class LoggerRepository:
     def __init__(self, session: Annotated[AsyncSession, get_session()]):
         self.session = session
 
-    async def create(self):
-        raise NotImplementedError()
+    async def create(
+            self,
+            status_code: HTTPStatus,
+            ip_address: str,
+            user_id: Optional[uuid.UUID],
+            action: Optional[HTTPMethod],
+            endpoint: str,
+            handle_time: float,
+            exception: Optional[str],
+            returning: Any = False
+    ):
+        stmt = (
+            insert(AuditRecord)
+            .values(
+                status_code=status_code.value,
+                ip_address=ip_address,
+                user_id=user_id,
+                action=None if action is None else action.value,
+                endpoint=endpoint,
+                handle_time=handle_time,
+                exception=exception
+            )
+        )
+
+        if returning:
+            stmt = stmt.returning(returning)
+
+        result = await self.session.execute(stmt)
+        return result
 
     async def get(
             self,
