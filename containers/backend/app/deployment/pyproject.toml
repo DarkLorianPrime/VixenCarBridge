@@ -6,7 +6,7 @@ authors = ["Darklorianprime <kasimov.alexander.ul@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.12"
 httpx = "^0.26.0"
 fastapi = "^0.109.0"
 sqlmodel = "^0.0.14"
