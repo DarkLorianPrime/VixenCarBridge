@@ -1,78 +1,81 @@
+import datetime
 import uuid
-from http import HTTPMethod, HTTPStatus
-from typing import Annotated, Optional, Any
+from typing import Annotated, Optional, List
 
 from sqlalchemy import insert
+from sqlalchemy.orm import Session
+from sqlalchemy.sql.functions import func
 from sqlmodel import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from storages.database.database import get_session
+from config import FLOOD_STOP_TIME
+from storages.database.database import get_session_sync
 from storages.database.models.log_record.model import AuditRecord
+from storages.database.models.log_record.pydantic_model import AuditLog
 
 
 class LoggerRepository:
-    def __init__(self, session: Annotated[AsyncSession, get_session()]):
+    def __init__(self, session: Annotated[Session, get_session_sync()]):
         self.session = session
 
-    async def create(
+    def create(
             self,
-            status_code: HTTPStatus,
-            ip_address: str,
-            user_id: Optional[uuid.UUID],
-            action: Optional[HTTPMethod],
-            endpoint: str,
-            handle_time: float,
-            exception: Optional[str],
-            returning: Any = False
+            payload: AuditLog
     ):
-        stmt = (
-            insert(AuditRecord)
-            .values(
-                status_code=status_code.value,
-                ip_address=ip_address,
-                user_id=user_id,
-                action=None if action is None else action.value,
-                endpoint=endpoint,
-                handle_time=handle_time,
-                exception=exception
-            )
-        )
+        items = payload.dict()
 
-        if returning:
-            stmt = stmt.returning(returning)
+        stmt = insert(AuditRecord).values(**items)
 
-        result = await self.session.execute(stmt)
+        if payload.returning:
+            stmt = stmt.returning(payload.returning)
+
+        result = self.session.execute(stmt)
         return result
 
-    async def get(
+    def get(
             self,
             offset: int = 0,
             limit: int = 100,
             user_id: Optional[uuid.UUID] = None,
+            is_flood: bool = False,
             one: bool = False
     ):
-        queries: list[bool] = []
-
+        query_filters: list[bool] = []
+        
         if user_id:
-            queries.append(AuditRecord.user_id == user_id)
+            query_filters.append(AuditRecord.user_id == user_id)
+
+        if is_flood:
+            start_time = datetime.datetime.now() - datetime.timedelta(minutes=FLOOD_STOP_TIME)
+            query_filters.append(AuditRecord.created_at > start_time)
+            query_result = func.count(AuditRecord.id)
+        else:
+            query_result = AuditRecord
 
         stmt = (
-            select(AuditRecord)
-            .filter(*queries)
+            select(query_result)
+            .filter(*query_filters)
             .order_by(AuditRecord.id)
             .limit(limit)
             .offset(offset)
         )
 
-        result = await self.session.execute(stmt)
-
+        result = self.session.execute(stmt)
+        
+        if is_flood:
+            return result.scalar()
+        
         scalar_result = result.scalars()
-
+        
         if one:
             return scalar_result.first()
 
         return scalar_result.all()
 
-    async def delete(self, instance: AuditRecord):
+    def delete(self, instance: AuditRecord):
         # set removed
-        await self.session.delete(instance)
+        self.session.delete(instance)
+
+    def bulk_create(self, payload: List[AuditLog]):
+        payload_list = [item.dict() for item in payload]
+        self.session.bulk_insert_mappings(AuditRecord, payload_list)
+        self.session.commit()
