@@ -8,7 +8,7 @@ from sqlalchemy.sql.functions import func
 from sqlmodel import select
 
 from config import FLOOD_STOP_TIME
-from storages.database.database import get_session_sync
+from storages.database.sync_database import get_session_sync
 from storages.database.models.log_record.model import AuditRecord
 from storages.database.models.log_record.pydantic_model import AuditLog
 
