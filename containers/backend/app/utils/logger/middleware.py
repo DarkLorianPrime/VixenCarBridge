@@ -26,6 +26,8 @@ class LoggerMiddleware(BaseHTTPMiddleware):
             duration: float,
     ) -> None:
         """
+        :param status_code: status code
+        :param exception: if 4xx status - save his body
         :param request: request object:
             ip_address: str
             user_id: uuid.UUID | None
