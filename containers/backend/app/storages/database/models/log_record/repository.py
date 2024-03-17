@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime
 from typing import Annotated, Optional, List
 
 from sqlalchemy import insert
@@ -33,7 +34,6 @@ class LoggerRepository:
             offset: int = 0,
             limit: int = 100,
             user_id: Optional[uuid.UUID] = None,
-            is_flood: bool = False,
             one: bool = False
     ):
         query_filters: list[bool] = []
@@ -51,9 +51,6 @@ class LoggerRepository:
 
         result = self.session.execute(stmt)
         
-        if is_flood:
-            return result.scalar()
-        
         scalar_result = result.scalars()
         
         if one:
@@ -63,9 +60,9 @@ class LoggerRepository:
 
     def delete(self, instance: AuditRecord):
         # set removed
-        self.session.delete(instance)
-
+        instance.removed = True
+        instance.removed_at = datetime.now()
+        
     def bulk_create(self, payload: List[AuditLog]):
         payload_list = [item.dict() for item in payload]
         self.session.bulk_insert_mappings(AuditRecord, payload_list)
-        self.session.commit()

@@ -2,10 +2,10 @@ import uuid
 
 from sqlmodel import Field
 
-from storages.database.models.base import Base
+from storages.database.models.base import DeletingBase
 
 
-class AuditRecord(Base, table=True):
+class AuditRecord(DeletingBase, table=True):
     status_code: int
     ip_address: str
     user_id: uuid.UUID | None = Field(foreign_key="account.id", nullable=True)
