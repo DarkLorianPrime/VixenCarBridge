@@ -12,12 +12,6 @@ from config import access_logger
 
 
 class LoggerMiddleware(BaseHTTPMiddleware):
-    async def on_request(
-            self,
-            request
-            ):
-        """тут будет анти-флуд фильтр"""
-
     async def on_response(
             self,
             request: Request,

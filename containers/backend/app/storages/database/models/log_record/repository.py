@@ -1,13 +1,10 @@
-import datetime
 import uuid
 from typing import Annotated, Optional, List
 
 from sqlalchemy import insert
 from sqlalchemy.orm import Session
-from sqlalchemy.sql.functions import func
 from sqlmodel import select
 
-from config import FLOOD_STOP_TIME
 from storages.database.sync_database import get_session_sync
 from storages.database.models.log_record.model import AuditRecord
 from storages.database.models.log_record.pydantic_model import AuditLog
@@ -44,15 +41,8 @@ class LoggerRepository:
         if user_id:
             query_filters.append(AuditRecord.user_id == user_id)
 
-        if is_flood:
-            start_time = datetime.datetime.now() - datetime.timedelta(minutes=FLOOD_STOP_TIME)
-            query_filters.append(AuditRecord.created_at > start_time)
-            query_result = func.count(AuditRecord.id)
-        else:
-            query_result = AuditRecord
-
         stmt = (
-            select(query_result)
+            select(AuditRecord)
             .filter(*query_filters)
             .order_by(AuditRecord.id)
             .limit(limit)
