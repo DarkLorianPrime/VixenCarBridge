@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Annotated
 
 from fastapi import Depends
@@ -40,8 +41,11 @@ class PassportRepository:
         return result
 
     def get(self):
+        """to-do:
+            maybe not needed
+        """ 
         ...
-
-    def delete(self):
-        # set removed
-        ...
+    
+    def delete(self, instance: Passport):
+        instance.removed = True
+        instance.removed_at = datetime.now()
