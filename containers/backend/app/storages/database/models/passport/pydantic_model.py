@@ -1,5 +1,5 @@
 import datetime
-from typing import Optional
+from typing import Optional, Any
 
 from sqlmodel import SQLModel, Field
 
@@ -9,10 +9,14 @@ class PassportModel(SQLModel):
     last_name: str
     middle_name: Optional[str] = None
     sex: bool
-    series: int = Field(max_length=4)
-    number: int = Field(max_length=6)
+    series: int = Field(ge=1000, le=9999)
+    number: int = Field(ge=100000, le=999999)
     subdiv_code: str = Field(max_length=7)
     issue_date: datetime.date
     issuing_place: str
     birth_day: datetime.date
     birth_place: str
+
+
+class CreatePassportModel(PassportModel):
+    returning: Any = False
