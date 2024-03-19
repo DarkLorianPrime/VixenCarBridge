@@ -1,7 +1,7 @@
 from logging import Handler, LogRecord
 from typing import List
 
-from storages.database.database import get_session_sync
+from storages.database.sync_database import get_session_sync
 from storages.database.models.log_record.pydantic_model import AuditLog
 from storages.database.models.log_record.repository import LoggerRepository
 
