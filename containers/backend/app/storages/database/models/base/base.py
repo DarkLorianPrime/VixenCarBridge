@@ -11,4 +11,4 @@ class Base(SQLModel):
 
 class DeletingBase(Base):
     removed: bool = Field(default=False)
-    removed_at: datetime = Field(default=None)
+    removed_at: datetime = Field(default=None, nullable=True)
