@@ -20,6 +20,7 @@ url = URL(
 engine: AsyncEngine = create_async_engine(url, echo=True)
 asyncsession_maker = async_sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
 
+
 async def get_session() -> AsyncGenerator[AsyncSession, None]:
     async with asyncsession_maker() as session:
         yield session

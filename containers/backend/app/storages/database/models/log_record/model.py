@@ -2,7 +2,7 @@ import uuid
 
 from sqlmodel import Field
 
-from storages.database.models.base import DeletingBase
+from storages.database.models.base.base import DeletingBase
 
 
 class AuditRecord(DeletingBase, table=True):
