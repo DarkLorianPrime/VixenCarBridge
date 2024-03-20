@@ -16,11 +16,12 @@ x-minio-env: &x-minio-env
 
 # Containers:
 # Backend - ✅
-# Nginx - ❌
+# Nginx - ✅
+# Postgresql - ✅
 # RabbitMQ bitnami/rabbitmq - ✅
 # MinIO minio/minio - ✅
 # Data checker - ❌
-# BRUGES - ❌:
+# BRUGES - ❌
 #   Запуск событий по времени
 
 services:
@@ -33,9 +34,6 @@ services:
     volumes:
       - "./containers/backend/app:/application"
 
-    ports:
-      - "8000:8000"
-
   rabbit:
     image: bitnami/rabbitmq
     environment:
@@ -43,16 +41,11 @@ services:
       RABBITMQ_MANAGEMENT_ALLOW_WEB_ACCESS: true
     volumes:
       - rabbit-data:/var/lib/rabbitmq
-    ports:
-      - "15672:15672"
 
   minio:
     image: minio/minio
     environment:
       <<: [ *x-minio-env ]
-    ports:
-      - "9000:9000"
-      - "9090:9090"
     volumes:
       - minio-data:/export
     command: minio server /export --console-address ":9090"
@@ -65,6 +58,14 @@ services:
     ports:
       - "80:80"
       - "443:443"
+
+  database:
+    restart: always
+    image: postgres:alpine
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      <<: [ *x-postgres-env ]
 
 networks:
   rabbit-network:
