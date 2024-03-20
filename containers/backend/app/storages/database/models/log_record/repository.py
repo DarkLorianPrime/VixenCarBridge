@@ -8,7 +8,7 @@ from sqlmodel import select
 
 from storages.database.sync_database import get_session_sync
 from storages.database.models.log_record.model import AuditRecord
-from storages.database.models.log_record.pydantic_model import AuditLog
+from storages.database.models.log_record.pydantic_model import AuditLog, CreateAuditLog
 
 
 class LoggerRepository:
@@ -17,7 +17,7 @@ class LoggerRepository:
 
     def create(
             self,
-            payload: AuditLog
+            payload: CreateAuditLog
     ):
         items = payload.dict()
 
