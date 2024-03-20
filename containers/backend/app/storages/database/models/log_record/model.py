@@ -1,15 +1,6 @@
-import uuid
-
-from sqlmodel import Field
-
 from storages.database.models.base.base import DeletingBase
+from storages.database.models.log_record.pydantic_model import AuditLog
 
 
-class AuditRecord(DeletingBase, table=True):
-    status_code: int
-    ip_address: str
-    user_id: uuid.UUID | None = Field(foreign_key="account.id", nullable=True)
-    action: str | None
-    endpoint: str
-    handle_time: float
-    exception: str | None
+class AuditRecord(AuditLog, DeletingBase, table=True):
+    pass
