@@ -29,9 +29,6 @@ class LoggerMiddleware(BaseHTTPMiddleware):
             endpoint: str
             handle_time: float
 
-        :param response: response object
-            status_code: int
-
         :param duration: handle duration
         """
         log_data = {
