@@ -4,7 +4,7 @@ from fastapi import FastAPI, APIRouter
 from starlette.middleware import Middleware
 from starlette.requests import Request
 
-from config import access_logger
+from _config import access_logger
 from utils.logger.middleware import LoggerMiddleware
 
 """

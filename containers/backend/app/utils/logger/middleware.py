@@ -8,7 +8,7 @@ from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoin
 from starlette.requests import Request
 from starlette.responses import Response
 
-from config import access_logger
+from _config import access_logger
 
 
 class LoggerMiddleware(BaseHTTPMiddleware):
