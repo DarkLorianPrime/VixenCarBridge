@@ -2,5 +2,5 @@ from enum import Enum
 
 
 class Drivers(Enum):
-    async_driver = "asyncpg"
-    driver = "psycopg2"
+    ASYNC_DRIVER = "asyncpg"
+    DRIVER = "psycopg2"
